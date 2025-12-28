@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/user"
 
 	"github.com/donnamarijne/gator/internal/config"
 )

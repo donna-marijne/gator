@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/user"
 
 	"github.com/donnamarijne/gator/internal/config"
@@ -14,25 +15,37 @@ func main() {
 		log.Fatal(err)
 	}
 
-	userName, err := getUserName()
-	if err != nil {
-		log.Fatal(err)
+	s := state{
+		config: &c,
 	}
 
-	err = c.SetUser(userName)
+	cmds := NewCommands()
+	cmds.register("login", handlerLogin)
+
+	cmd, err := getCommand()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Usage: gator <command>\n")
+		os.Exit(1)
 	}
 
-	c2, err := config.Read()
-	fmt.Println(c2)
+	err = cmds.run(&s, cmd)
+	if err != nil {
+		fmt.Printf("Command %s failed: %v\n", cmd.name, err)
+		os.Exit(1)
+	}
 }
 
-func getUserName() (string, error) {
-	u, err := user.Current()
-	if err != nil {
-		return "", fmt.Errorf("failed to get user info from the os: %w", err)
+func getCommand() (command, error) {
+	var cmd command
+	args := os.Args[1:]
+	if len(args) < 1 {
+		return cmd, fmt.Errorf("not enough args")
 	}
 
-	return u.Username, nil
+	cmd = command{
+		name: args[0],
+		args: args[1:],
+	}
+
+	return cmd, nil
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 )
@@ -13,12 +15,20 @@ func handlerLogin(s *state, cmd command) error {
 
 	userName := cmd.args[0]
 
-	err := s.config.SetUser(userName)
+	user, err := s.db.GetUser(context.Background(), userName)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("no such user %s", userName)
+		}
+		return fmt.Errorf("failed to query user %s: %w", userName, err)
+	}
+
+	err = s.config.SetUser(user.Name)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Set the user to %s\n", userName)
+	fmt.Printf("Logged in as %s\n", user.Name)
 
 	fmt.Printf("%+v\n", s.config)
 

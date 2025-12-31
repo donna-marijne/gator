@@ -7,3 +7,8 @@ returning *;
 select sqlc.embed(feeds), sqlc.embed(users)
 from feeds 
 	left join users on feeds.user_id = users.id;
+
+-- name: GetFeedByUrl :one
+select *
+from feeds
+where url = $1;

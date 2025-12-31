@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -23,9 +22,6 @@ func handlerAddFeed(s *state, cmd command) error {
 	userName := s.config.CurrentUserName
 	user, err := s.db.GetUser(context.Background(), userName)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return fmt.Errorf("no such user %s", userName)
-		}
 		return fmt.Errorf("failed to query user %s: %w", userName, err)
 	}
 
@@ -40,6 +36,17 @@ func handlerAddFeed(s *state, cmd command) error {
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create the feed %q (%s): %w", name, url, err)
+	}
+
+	_, err = s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: now,
+		UpdatedAt: now,
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create feed follow for %s: %w", url, err)
 	}
 
 	fmt.Printf("Created: %+v\n", feed)

@@ -10,16 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 1 {
 		fmt.Println("Usage: follow <url>")
 		return errors.New("wrong number of args")
-	}
-
-	userName := s.config.CurrentUserName
-	user, err := s.db.GetUser(context.Background(), userName)
-	if err != nil {
-		return fmt.Errorf("failed to query user %s: %w", userName, err)
 	}
 
 	feedUrl := cmd.args[0]

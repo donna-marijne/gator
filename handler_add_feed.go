@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 2 {
 		fmt.Println("Usage: addfeed <name> <url>")
 		return errors.New("incorrect number of args")
@@ -18,12 +18,6 @@ func handlerAddFeed(s *state, cmd command) error {
 
 	name := cmd.args[0]
 	url := cmd.args[1]
-
-	userName := s.config.CurrentUserName
-	user, err := s.db.GetUser(context.Background(), userName)
-	if err != nil {
-		return fmt.Errorf("failed to query user %s: %w", userName, err)
-	}
 
 	now := time.Now()
 	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{

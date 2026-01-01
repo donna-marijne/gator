@@ -12,3 +12,8 @@ from feed_follows
 	left join users on users.id = feed_follows.user_id
 	left join feeds on feeds.id = feed_follows.feed_id
 where users.id = $1;
+
+-- name: DeleteFeedFollow :execrows
+delete from feed_follows
+where user_id = $1 and feed_id = $2;
+

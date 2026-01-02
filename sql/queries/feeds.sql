@@ -12,3 +12,16 @@ from feeds
 select *
 from feeds
 where url = $1;
+
+-- name: GetNextFeedToFetch :one
+select *
+from feeds
+order by last_fetched_at asc nulls first
+limit 1;
+
+-- name: MarkFeedFetched :one
+update feeds
+set last_fetched_at = current_timestamp, updated_at = current_timestamp
+where id = $1
+returning *;
+

@@ -9,7 +9,7 @@ type URLEncodedString struct {
 	s string
 }
 
-func (u *URLEncodedString) String() string {
+func (u URLEncodedString) String() string {
 	return u.s
 }
 

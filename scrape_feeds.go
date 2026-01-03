@@ -28,7 +28,9 @@ func scrapeFeeds(s *state) error {
 	}
 
 	for _, item := range rssFeed.Channel.Item {
-		_, err := s.db.CreatePost(context.Background(), database.CreatePostParams{
+		fmt.Printf("%+v\n", item)
+
+		post, err := s.db.CreatePost(context.Background(), database.CreatePostParams{
 			ID:          uuid.New(),
 			Url:         item.Link,
 			Title:       toNullString(item.Title.String()),
@@ -47,7 +49,7 @@ func scrapeFeeds(s *state) error {
 			continue
 		}
 
-		fmt.Printf("New post: %s (%s)\n", item.Title, item.Link)
+		fmt.Printf("New post: %v (%v)\n", post.Title, post.Url)
 	}
 
 	return nil
@@ -58,7 +60,7 @@ func toNullString(s string) sql.NullString {
 		return sql.NullString{String: "", Valid: false}
 	}
 
-	return sql.NullString{String: s}
+	return sql.NullString{String: s, Valid: true}
 }
 
 func toNullTime(s string) sql.NullTime {
@@ -68,5 +70,5 @@ func toNullTime(s string) sql.NullTime {
 		return sql.NullTime{Valid: false}
 	}
 
-	return sql.NullTime{Time: t}
+	return sql.NullTime{Time: t, Valid: true}
 }

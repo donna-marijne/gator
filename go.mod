@@ -1,4 +1,4 @@
-module github.com/donnamarijne/gator
+module github.com/donna-marijne/gator
 
 go 1.25.5
 

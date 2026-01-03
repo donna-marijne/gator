@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/donnamarijne/gator/internal/config"
-	"github.com/donnamarijne/gator/internal/database"
+	"github.com/donna-marijne/gator/internal/config"
+	"github.com/donna-marijne/gator/internal/database"
 )
 
 type state struct {

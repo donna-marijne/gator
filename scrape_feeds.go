@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/donnamarijne/gator/internal/database"
+	"github.com/donna-marijne/gator/internal/database"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
@@ -28,8 +28,6 @@ func scrapeFeeds(s *state) error {
 	}
 
 	for _, item := range rssFeed.Channel.Item {
-		fmt.Printf("%+v\n", item)
-
 		post, err := s.db.CreatePost(context.Background(), database.CreatePostParams{
 			ID:          uuid.New(),
 			Url:         item.Link,

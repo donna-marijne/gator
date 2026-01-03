@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/donnamarijne/gator/internal/database"
+	"github.com/donna-marijne/gator/internal/database"
 )
 
 func handlerBrowse(s *state, cmd command, user database.User) error {
@@ -26,7 +26,6 @@ func handlerBrowse(s *state, cmd command, user database.User) error {
 
 	for _, post := range posts {
 		fmt.Printf("%v\n%v\n\n%v\n\n---\n", post.Title.String, post.Url, post.Description.String)
-		// fmt.Printf("%+v\n", post)
 	}
 
 	return nil

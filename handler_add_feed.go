@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/donnamarijne/gator/internal/database"
+	"github.com/donna-marijne/gator/internal/database"
 	"github.com/google/uuid"
 )
 

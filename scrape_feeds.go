@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+
+	"github.com/donnamarijne/gator/internal/database"
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 func scrapeFeeds(s *state) error {
@@ -22,13 +27,46 @@ func scrapeFeeds(s *state) error {
 		return fmt.Errorf("failed to fetch the RSS feed: %w", err)
 	}
 
-	printFeed(rssFeed)
+	for _, item := range rssFeed.Channel.Item {
+		_, err := s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			Url:         item.Link,
+			Title:       toNullString(item.Title.String()),
+			Description: toNullString(item.Description.String()),
+			PublishedAt: toNullTime(item.PubDate),
+			FeedID:      feed.ID,
+		})
+		if err != nil {
+			if pqerr, ok := err.(*pq.Error); ok {
+				if pqerr.Code == "23505" {
+					continue
+				}
+			}
+
+			fmt.Printf("Error: %v\n", err)
+			continue
+		}
+
+		fmt.Printf("New post: %s (%s)\n", item.Title, item.Link)
+	}
 
 	return nil
 }
 
-func printFeed(rssFeed *RSSFeed) {
-	for _, item := range rssFeed.Channel.Item {
-		fmt.Printf("* %s\n", item.Title)
+func toNullString(s string) sql.NullString {
+	if s == "" {
+		return sql.NullString{String: "", Valid: false}
 	}
+
+	return sql.NullString{String: s}
+}
+
+func toNullTime(s string) sql.NullTime {
+	t, err := parseTime(s)
+	if err != nil {
+		fmt.Printf("Failed to parse time: %v\n", err)
+		return sql.NullTime{Valid: false}
+	}
+
+	return sql.NullTime{Time: t}
 }
